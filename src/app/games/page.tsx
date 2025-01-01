@@ -67,6 +67,8 @@ export default function GamesPage() {
 
   const { data: session, status } = useSession();
 
+  console.log("session data", session );
+
   if (status === "loading") {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-black ">
@@ -82,8 +84,6 @@ export default function GamesPage() {
   return (
     <div className='min-h-screen bg-gradient-to-b from-gray-900 to-black '>
     <Navbar />
-
-    <p>{session.user?.name}</p>
 
     <div className=" text-white py-12 px-4 sm:px-6 lg:px-8">
       <motion.div

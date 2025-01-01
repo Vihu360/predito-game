@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { Gamepad2, Shield, Zap, DollarSign, Users, Trophy } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -97,15 +98,17 @@ export default function Home() {
               Experience thrilling games where your predictions lead to rewards. Join thousands of players worldwide.
             </motion.p>
 
+            <Link href={'/games'}>
             <motion.div
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.5 }}
-            >
+              >
               <Button className="text-lg px-8 py-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-200 rounded-full shadow-lg">
                 Start Playing Now
               </Button>
             </motion.div>
+            </Link>
           </motion.div>
         </header>
 

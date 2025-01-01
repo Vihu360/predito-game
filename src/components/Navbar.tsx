@@ -5,10 +5,16 @@ import { Button } from './ui/button';
 import { Menu } from 'lucide-react';
 import MobileMenu from './Mobilemenu';
 import { useScrollEffect } from '@/hooks/useScrollEffect';
+import { useSession } from 'next-auth/react';
+import { UserProps } from '@/lib/type';
+import { IconCarambolaFilled } from '@tabler/icons-react';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const isScrolled = useScrollEffect();
+
+  const { data: session, status } = useSession();
+
 
   return (
     <nav className={`${
@@ -22,6 +28,8 @@ const Navbar = () => {
           } text-xl font-bold transition-colors duration-300`}>
             Logo
           </Link>
+
+
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
@@ -45,6 +53,13 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Button */}
+          {status === 'authenticated' && 
+          <div className="flex gap-2 p-1 items-center justify-center">
+            <IconCarambolaFilled className={` ${isScrolled ? 'text-black' : 'text-white'} w-4 h-4`} />
+            <p className={` ${isScrolled ? 'text-black' : 'text-white'} font-bold`}>credits : </p>
+            <p className={` ${isScrolled ? 'text-black' : 'text-white'} font-bold`}>{(session.user as UserProps)?.credits}</p>
+            </div>
+          }
           <button
             className="md:hidden p-2 rounded-md"
             onClick={() => setIsMobileMenuOpen(true)}

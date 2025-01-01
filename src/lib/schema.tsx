@@ -3,7 +3,8 @@ import {
 	pgTable,
 	text,
 	primaryKey,
-	integer
+	integer,
+	boolean
 } from "drizzle-orm/pg-core"
 import type { AdapterAccount } from "@auth/core/adapters"
 
@@ -12,7 +13,8 @@ export const users = pgTable("user", {
 	name: text("name"),
 	email: text("email").notNull(),
 	emailVerified: timestamp("emailVerified", { mode: "date" }),
-    image: text("image")
+    image: text("image"),
+	isAdmin: boolean("is_admin").default(false),
 })
 
 export const accounts = pgTable(
@@ -57,11 +59,11 @@ export const verificationTokens = pgTable(
 	})
 )
 
-export const projects = pgTable("project", {
-	id: text("id").notNull().primaryKey(),
-	name: text("name").notNull(),
-	description: text("description").notNull(),
-	userId: text("userId")
-		.notNull()
-		.references(() => users.id, { onDelete: "cascade" })
-})
+export const credits = pgTable('credits', {
+	id: text('id').primaryKey(),
+	userId: text('userId').references(() => users.id),
+	amount: integer('amount').notNull().default(30),
+	lastUpdated: timestamp('last_updated').defaultNow(),
+	transactionType: text('transaction_type').default('reward'), // purchase, reward, refund, etc.
+	transactionId: text('transaction_id')
+ });
