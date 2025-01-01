@@ -4,6 +4,8 @@ import { credits } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
+
+  console.log("checkCredit");
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId');
@@ -27,6 +29,9 @@ export async function GET(req: NextRequest) {
         { status: 404 }
       );
     }
+
+
+    console.log(userCredits[0].amount);
 
     return NextResponse.json(
       { credits: userCredits[0].amount },

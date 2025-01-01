@@ -1,5 +1,4 @@
-// auth.ts
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions, Session, User } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
@@ -7,7 +6,7 @@ import { db } from "./lib/dbConnect";
 import { credits, users } from "./lib/schema";
 import { eq } from "drizzle-orm";
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: DrizzleAdapter(db),
   providers: [
     GoogleProvider({
@@ -24,19 +23,16 @@ export const authOptions = {
     error: '/auth/error',
   },
   callbacks: {
-
-    async signIn({ user, account, profile }: any) {
-      return true; // Just allow the sign in
+    async signIn() {
+      return true;
     },
-  
-    async session({ session, user }: any) {
-      try {
 
+    async session({ session, user }: { session: Session; user: User & { id: string } }) {
+      try {
         // Check if user already has credits
         const existingCredits = await db.select().from(credits).where(eq(credits.userId, user.id)).limit(1);
         const isAdmin = await db.select().from(users).where(eq(users.id, user.id)).limit(1);
 
-  
         if (existingCredits.length === 0) {
           await db.insert(credits).values({
             id: crypto.randomUUID(),
@@ -45,21 +41,20 @@ export const authOptions = {
           });
         }
 
-        console.log("user session",session.user)
-  
-        // Optionally add current credits to session
-        const userCredits = existingCredits
-        session.user.credits = userCredits[0].amount;
-        session.user.isAdmin = isAdmin[0].isAdmin || false;
-        session.user.id = user.id;
-  
-        return session;
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            credits: existingCredits[0]?.amount ?? 0,
+            isAdmin: isAdmin[0]?.isAdmin ?? false,
+            id: user.id
+          }
+        };
       } catch (error) {
         console.error("Error in session callback:", error);
         return session;
       }
     },
-
 
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
       if (url.startsWith("/")) return `${baseUrl}${url}`;
@@ -72,6 +67,3 @@ export const authOptions = {
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
-
-const auth = NextAuth(authOptions);
-export default auth;

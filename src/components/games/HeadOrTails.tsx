@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import Navbar from '../Navbar';
 import Image from 'next/image';
@@ -31,7 +31,6 @@ export default function HeadsOrTails() {
   useEffect(() => {
     const fetchUserCredits = async () => {
       setLoading(true);
-
       if (!session?.user) {
         return;
       }
@@ -39,15 +38,16 @@ export default function HeadsOrTails() {
       try {
         const userId = (session?.user as UserProps)?.id;
         const response = await axios.get(`/api/checkCredit?userId=${userId}`);
+        console.log(response.data.credits);
         setUserCredits(response.data.credits);
-      } catch (err) {
-      } finally {
         setLoading(false);
-      }
+      } catch (err) {
+        console.log(err);
+      } 
     };
 
     fetchUserCredits();
-  }, [session?.user]);
+  }, []);
 
   const handleGameResult = async (outcome: 'heads' | 'tails') => {
     setResult(outcome);
