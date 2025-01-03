@@ -1,10 +1,22 @@
-import NextAuth, { NextAuthOptions, Session, User } from "next-auth";
+// auth.ts
+import NextAuth, { NextAuthOptions, Session } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "./lib/dbConnect";
 import { credits, users } from "./lib/schema";
 import { eq } from "drizzle-orm";
+
+
+// Extend the built-in session types
+interface ExtendedSession extends Session {
+  user: {
+    id: string;
+    credits: number;
+    isAdmin: boolean;
+    role?: string;
+  } & Session["user"];
+}
 
 export const authOptions: NextAuthOptions = {
   adapter: DrizzleAdapter(db),
@@ -22,21 +34,41 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
     error: '/auth/error',
   },
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    async signIn() {
-      return true;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = "games";
+      }
+      return token;
     },
 
-    async session({ session, user }: { session: Session; user: User & { id: string } }) {
+    async session({ session, token }): Promise<ExtendedSession> {
       try {
-        // Check if user already has credits
-        const existingCredits = await db.select().from(credits).where(eq(credits.userId, user.id)).limit(1);
-        const isAdmin = await db.select().from(users).where(eq(users.id, user.id)).limit(1);
+        if (!token?.id) return session as ExtendedSession;
+
+        // Explicitly type the userId for the query
+        const userId: string = token.id.toString();
+
+        const existingCredits = await db
+          .select()
+          .from(credits)
+          .where(eq(credits.userId, userId))
+          .limit(1);
+        
+        const userRecord = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, userId))
+          .limit(1);
 
         if (existingCredits.length === 0) {
           await db.insert(credits).values({
             id: crypto.randomUUID(),
-            userId: user.id,
+            userId: userId,
             transactionId: "reward-credit-NA"
           });
         }
@@ -46,20 +78,19 @@ export const authOptions: NextAuthOptions = {
           user: {
             ...session.user,
             credits: existingCredits[0]?.amount ?? 0,
-            isAdmin: isAdmin[0]?.isAdmin ?? false,
-            id: user.id
+            isAdmin: userRecord[0]?.isAdmin ?? false,
+            id: userId,
+            role: token.role as string,
           }
         };
       } catch (error) {
         console.error("Error in session callback:", error);
-        return session;
+        return session as ExtendedSession;
       }
     },
 
-    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
+    async redirect({ url, baseUrl }) {
+      return url.startsWith(baseUrl) ? url : baseUrl;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
