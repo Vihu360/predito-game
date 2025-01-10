@@ -11,6 +11,9 @@ export default function GamePage() {
   const games = {
     'heads-tails': HeadsOrTails,
     'spin-wheel': SpinWheel,
+    'lucky-draw': SpinWheel,
+    'predict-chart': SpinWheel,
+    'color-selection': SpinWheel,
   };
 
   const GameComponent = games[gameId as keyof typeof games];

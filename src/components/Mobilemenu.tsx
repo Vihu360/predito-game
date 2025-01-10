@@ -62,6 +62,13 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                   Rules
                 </Link>
                 <Link
+                href={"/share"}
+                onClick={onClose}
+                className="px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
+                >
+                Referral
+                </Link>
+                <Link
                   href="/about"
                   className="px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
                   onClick={onClose}

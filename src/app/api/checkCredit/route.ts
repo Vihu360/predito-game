@@ -5,7 +5,6 @@ import { eq } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
 
-  console.log("checkCredit");
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId');
@@ -31,7 +30,7 @@ export async function GET(req: NextRequest) {
     }
 
 
-    console.log(userCredits[0].amount);
+    console.log("credit vjevk",userCredits);
 
     return NextResponse.json(
       { credits: userCredits[0].amount },

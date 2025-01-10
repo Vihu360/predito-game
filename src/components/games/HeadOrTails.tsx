@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import Navbar from '../Navbar';
 import Image from 'next/image';
 import {
   Dialog,
@@ -111,8 +110,6 @@ export default function HeadsOrTails() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
-
-      <Navbar />
       {loading ? (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-300"></div>

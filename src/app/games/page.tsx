@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import GameCard from '@/components/games/GameCard';
 import { Coins, Disc, Gift, LineChart, Palette, CoinsIcon } from 'lucide-react';
-import Navbar from '@/components/Navbar';
 import { useSession } from "next-auth/react";
 
 
@@ -83,8 +82,6 @@ export default function GamesPage() {
 
   return (
     <div className='min-h-screen bg-gradient-to-b from-gray-900 to-black '>
-    <Navbar />
-
     <div className=" text-white py-12 px-4 sm:px-6 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}

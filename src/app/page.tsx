@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { Gamepad2, Shield, Zap, DollarSign, Users, Trophy } from 'lucide-react';
@@ -46,7 +45,6 @@ export default function Home() {
 
   return (
     <div className='min-h-screen bg-gradient-to-b from-black via-purple-950 to-black'>
-      <Navbar />
       <div className="text-white">
         {/* Hero Section */}
         <header className="relative min-h-screen flex flex-col justify-center items-center text-center px-6 overflow-hidden">
